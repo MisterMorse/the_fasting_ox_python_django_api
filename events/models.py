@@ -12,3 +12,6 @@ class Event(models.Model):
 
     class Meta:
         ordering = ['date', 'start_time', 'name', 'id']
+
+    def __str__(self):
+        return f'{self.category} -> {self.name}, {self.date}'
