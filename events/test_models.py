@@ -23,7 +23,12 @@ class EventModelTest(TestCase):
         max_length = event._meta.get_field('location').max_length
         self.assertIs(max_length, 100)
 
+    def test_event_day_of_week_max_length(self):
+        event = Event.objects.get(id=1)
+        max_length = event._meta.get_field('day_of_week').max_length
+        self.assertIs(max_length, 100)
+
     def test_event_string_method(self):
         event = Event.objects.get(id=1)
         expected_object_string = f'{event.category} -> {event.name}, {event.date}'
-        self.assertIs(event.__str__(), expected_object_string)
+        self.assertEqual(event.__str__(), expected_object_string)
