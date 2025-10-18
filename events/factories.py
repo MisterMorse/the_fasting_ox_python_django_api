@@ -14,3 +14,6 @@ class EventFactory(factory.django.DjangoModelFactory):
     date = factory.Faker('date')
     start_time = factory.Faker('time')
     end_time = factory.Faker('time')
+    day_of_week = factory.Faker('word')
+    created_at = factory.Faker('date_time')
+    updated_at = factory.Faker('date_time')
