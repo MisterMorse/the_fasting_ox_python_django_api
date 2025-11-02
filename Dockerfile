@@ -1,51 +1,52 @@
-# syntax=docker/dockerfile:1
+# Stage 1: Base build stage
+FROM python:3.13-slim AS builder
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
+# Create the app directory
+RUN mkdir /app
 
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
-ARG PYTHON_VERSION=3.12.3
-FROM python:${PYTHON_VERSION}-slim as base
-
-# Prevents Python from writing pyc files.
-ENV PYTHONDONTWRITEBYTECODE=1
-
-# Keeps Python from buffering stdout and stderr to avoid situations where
-# the application crashes without emitting any logs due to buffering.
-ENV PYTHONUNBUFFERED=1
-
+# Set the working directory
 WORKDIR /app
 
-# Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/go/dockerfile-user-best-practices/
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
+# Set environment variables to optimize Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
-# Leverage a bind mount to requirements.txt to avoid having to copy them into
-# into this layer.
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt
+# Upgrade pip and install dependencies
+RUN pip install --upgrade pip
 
-# Switch to the non-privileged user to run the application.
-USER appuser
+# Copy the requirements file first (better caching)
+COPY requirements.txt /app/
 
-# Copy the source code into the container.
-COPY . .
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port that the application listens on.
+# Stage 2: Production stage
+FROM python:3.13-slim
+
+RUN useradd -m -r postgres && \
+   mkdir /app && \
+   chown -R postgres /app
+
+# Copy the Python dependencies from the builder stage
+COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+# Set the working directory
+WORKDIR /app
+
+# Copy application code
+COPY --chown=postgres:postgres . .
+
+# Set environment variables to optimize Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Switch to non-root user
+USER postgres
+
+# Expose the application port
 EXPOSE 8000
 
-# Run the application.
-CMD gunicorn 'the_fasting_ox_python_django_api.wsgi' --bind=0.0.0.0:8000
+# Start the application using Gunicorn
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "the_fasting_ox_python_django_api.wsgi:application"]
