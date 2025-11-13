@@ -1,52 +1,67 @@
-# Stage 1: Base build stage
+# Stage 1: Base build stage.
 FROM python:3.13-slim AS builder
 
-# Create the app directory
+# Create the app directory.
 RUN mkdir /app
 
-# Set the working directory
+# Set the working directory.
 WORKDIR /app
 
-# Set environment variables to optimize Python
+# Set environment variables to optimize Python.
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Upgrade pip and install dependencies
+# Upgrade pip and install dependencies.
 RUN pip install --upgrade pip
 
-# Copy the requirements file first (better caching)
+# Copy the requirements file first (better caching).
 COPY requirements.txt /app/
 
-# Install Python dependencies
+# Install Python dependencies.
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Stage 2: Production stage
+# Stage 2: Production stage.
 FROM python:3.13-slim
 
-RUN useradd -m -r postgres && \
-   mkdir /app && \
-   chown -R postgres /app
+# Switch to root user, install package for waiting behavior,
+# copy the entrypoint script into the container, and make it executable.
+USER root
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Copy the Python dependencies from the builder stage
+# Create a non-root user and group.
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser && \
+   mkdir /app && \
+   chown -R appuser /app
+
+# Copy the Python dependencies from the builder stage.
 COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
-# Set the working directory
+# Set the working directory.
 WORKDIR /app
 
-# Copy application code
-COPY --chown=postgres:postgres . .
+# Copy the application code.
+COPY . /app/
 
-# Set environment variables to optimize Python
+# Give the appuser ownership of the application directory.
+RUN chown -R appuser:appgroup /app
+
+# Switch to the non-root user.
+USER appuser
+
+# Set environment variables to optimize Python.
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Switch to non-root user
-USER postgres
-
-# Expose the application port
+# Expose the application port.
 EXPOSE 8000
 
-# Start the application using Gunicorn
+# Set the entrypoint.
+ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "the_fasting_ox_python_django_api.wsgi:application"]
+# Set the default command (will be passed as arguments to the entrypoint script via "$@").
+CMD ["gunicorn", "--bind", ":8000", "the_fasting_ox_python_django_api.wsgi:application"]
+# Or for development:
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
