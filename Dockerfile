@@ -59,9 +59,9 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
 # Set the entrypoint.
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT [ "/entrypoint.sh" ]
 
 # Set the default command (will be passed as arguments to the entrypoint script via "$@").
-CMD ["gunicorn", "--bind", ":8000", "the_fasting_ox_python_django_api.wsgi:application"]
+CMD [ "gunicorn", "--bind", ":8000", "the_fasting_ox_python_django_api.wsgi:application" ]
 # Or for development:
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
