@@ -75,7 +75,6 @@ WSGI_APPLICATION = 'the_fasting_ox_python_django_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# noinspection PyPackageRequirements
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.{}'.format(os.environ.get('DATABASE_ENGINE', 'sqlite3')),

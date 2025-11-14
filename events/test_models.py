@@ -1,7 +1,8 @@
 from django.test import TestCase
 
-from events.models import Event
 from events.factories import EventFactory
+from events.models import Event
+
 
 class EventModelTest(TestCase):
     @classmethod
@@ -67,7 +68,6 @@ class EventModelTest(TestCase):
     def test_event_day_of_week_max_length(self):
         max_length = Event._meta.get_field("day_of_week").max_length
         self.assertEqual(max_length, 100)
-
 
     # I need to put some tests in here so that I can test the time created_at and updated_at
     # are recorded to confirm the parameters; I may put in freezegun, but the architecture

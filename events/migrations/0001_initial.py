@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                "ordering": ["date", "start_time", "name", "id"],
+                "ordering": [ "date", "start_time", "name", "id" ],
             },
         ),
     ]

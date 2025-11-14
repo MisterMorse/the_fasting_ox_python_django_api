@@ -14,7 +14,7 @@ class Event(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["date", "start_time", "name", "id"]
+        ordering = [ "date", "start_time", "name", "id" ]
 
     def __str__(self):
-        return f"{self.category} -> {self.name}, {self.date}"
+        return f"{ self.category } -> { self.name }, { self.date }"

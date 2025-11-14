@@ -1,7 +1,8 @@
 from django.test import TestCase
 
-from events.models import Event
 from events.factories import EventFactory
+from events.models import Event
+
 
 class EventFactoryTest(TestCase):
     @classmethod
