@@ -1,1 +1,7 @@
-venv
+# Template .gitignore files are not affecting __pychache__ directories.
+**/__pycache__
+*.env
+
+media
+staticfiles
+.venv
