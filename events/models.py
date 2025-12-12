@@ -6,7 +6,7 @@ class Event(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
-    date = models.DateField()
+    date = models.DateField(blank=True, null=True)
     start_time = models.TimeField()
     end_time = models.TimeField()
     day_of_week = models.CharField(max_length=100)
