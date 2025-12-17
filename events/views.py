@@ -22,3 +22,10 @@ def event_list(request):
     query_set = Event.objects.all()
     serializer = EventSerializer(query_set, many=True)
     return CustomEventsResponse(serializer.data)
+
+
+@api_view([ "GET" ])
+def event_list_by_category(request, category):
+    query_set = Event.objects.all().filter(category=category)
+    serializer = EventSerializer(query_set, many=True)
+    return CustomEventsResponse(serializer.data)
