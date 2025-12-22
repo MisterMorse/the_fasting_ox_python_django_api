@@ -5,7 +5,7 @@ set -e
 
 # Wait for the PostgreSQL database service to be available.
 echo "Waiting for PostgreSQL..."
-while ! nc -z "$DATABASE_HOST" "$DATABASE_PORT"; do
+while ! nc -z "${DATABASE_HOST}" "${DATABASE_PORT}"; do
   echo "Waiting at ${DATABASE_HOST}:${DATABASE_PORT}..."
   sleep 1s
 done
