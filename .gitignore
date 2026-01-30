@@ -5,3 +5,6 @@
 media
 staticfiles
 .venv
+
+# Temporary nuke
+.idea
