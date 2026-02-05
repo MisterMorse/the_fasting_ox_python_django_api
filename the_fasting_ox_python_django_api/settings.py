@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
+import socket
 from pathlib import Path
 from dotenv import load_dotenv
 
-import os
 
 load_dotenv()
 
@@ -29,6 +30,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1").split(",")
+container_ip = socket.gethostbyname(socket.gethostname())
+ALLOWED_HOSTS.append(container_ip)
+print("============")
+print(ALLOWED_HOSTS)
+print("============")
 
 
 # Application definition
@@ -57,8 +63,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split("|")
 
 ROOT_URLCONF = 'the_fasting_ox_python_django_api.urls'
 
@@ -145,3 +149,6 @@ STORAGES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Temporary nuke
+CORS_ORIGIN_ALLOW_ALL = True
