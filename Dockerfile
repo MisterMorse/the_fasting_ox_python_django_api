@@ -28,7 +28,10 @@ FROM python:3.13-slim
 # Switch to root user, install package for waiting behavior,
 # copy the entrypoint script into the container, and make it executable.
 USER root
+
+# Duplicating the cleanup command may be inefficient but I need to do more research
 RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user and group.
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser && \
