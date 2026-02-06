@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 import socket
+import requests
+
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -30,8 +32,17 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1").split(",")
-container_ip = socket.gethostbyname(socket.gethostname())
-ALLOWED_HOSTS.append(container_ip)
+APPLICATION_LOAD_BALANCER = os.environ.get("APPLICATION_LOAD_BALANCER")
+meta_url = os.environ.get("ECS_CONTAINER_METADATA_URI_V4")
+if meta_url:
+    response = requests.get(meta_url)
+    if response.status_code == 200:
+        data = response.json()
+        # Extract the IPv4 address from the container metadata
+        container_ip = data.get("Networks")[0].get("IPv4Addresses")[0]
+        ALLOWED_HOSTS.append(container_ip)
+        ALLOWED_HOSTS.append("localhost")
+        ALLOWED_HOSTS.append(APPLICATION_LOAD_BALANCER)
 print("============")
 print(ALLOWED_HOSTS)
 print("============")
