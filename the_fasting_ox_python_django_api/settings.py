@@ -27,25 +27,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = bool(os.environ.get('DEBUG', default=0))
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1").split(",")
-APPLICATION_LOAD_BALANCER = os.environ.get("APPLICATION_LOAD_BALANCER")
-meta_url = os.environ.get("ECS_CONTAINER_METADATA_URI_V4")
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1').split(',')
+APPLICATION_LOAD_BALANCER = os.environ.get('APPLICATION_LOAD_BALANCER')
+meta_url = os.environ.get('ECS_CONTAINER_METADATA_URI_V4')
 if meta_url:
     response = requests.get(meta_url)
     if response.status_code == 200:
         data = response.json()
         # Extract the IPv4 address from the container metadata
-        container_ip = data.get("Networks")[0].get("IPv4Addresses")[0]
+        container_ip = data.get('Networks')[0].get('IPv4Addresses')[0]
         ALLOWED_HOSTS.append(container_ip)
-        ALLOWED_HOSTS.append("localhost")
+        ALLOWED_HOSTS.append('localhost')
+        ALLOWED_HOSTS.append('*')
         ALLOWED_HOSTS.append(APPLICATION_LOAD_BALANCER)
-print("============")
+print('============')
 print(ALLOWED_HOSTS)
-print("============")
+print('============')
 
 
 # Application definition
@@ -58,13 +59,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "corsheaders",
-    "events.apps.EventsConfig",
-    'health.apps.HealthConfig'
+    'corsheaders',
+    'health.apps.HealthConfig',
+    'events.apps.EventsConfig',
+    'prayers.apps.PrayersConfig'
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -145,14 +147,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
 
