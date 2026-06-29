@@ -17,9 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-urlpatterns = [
+corepatterns = [
     path("admin/", admin.site.urls),
     path("health/", include("health.urls")),
     path("events/", include("events.urls")),
     path("prayers/", include("prayers.urls")),
+]
+
+urlpatterns = [
+    path("api/v1/", include(corepatterns)),
 ]
