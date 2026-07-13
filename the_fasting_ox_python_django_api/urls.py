@@ -18,12 +18,12 @@ from django.contrib import admin
 from django.urls import include, path
 
 corepatterns = [
-    path("admin/", admin.site.urls),
     path("health/", include("health.urls")),
     path("events/", include("events.urls")),
     path("prayers/", include("prayers.urls")),
 ]
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path("api/v1/", include(corepatterns)),
 ]
